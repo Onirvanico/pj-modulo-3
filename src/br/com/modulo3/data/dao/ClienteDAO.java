@@ -5,7 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import br.com.modulo3.data.ConnectionFactory;
+import br.com.modulo3.data.ConnectionFactoryMySQL;
+import br.com.modulo3.data.ConnectionFactorySQLServer;
 import br.com.modulo3.model.Cliente;
 
 public class ClienteDAO extends AbstractDAO<Cliente>{
@@ -18,7 +19,7 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactory.createConnection();
+			connection = ConnectionFactorySQLServer.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    ResultSet result = pstm.executeQuery();
 		    
@@ -32,12 +33,12 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 	}
 	
 	public void salvaCliente(Cliente cliente) {
-		String sql = "INSERT INTO Cliente VALUES(DEFAULT, ?, ?)";
+		String sql = "INSERT INTO Cliente VALUES( ?, ?)";
 		Connection connection = null;
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactory.createConnection();
+			connection = ConnectionFactorySQLServer.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    insere(pstm, cliente);
@@ -55,10 +56,15 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactory.createConnection();
+			connection = ConnectionFactorySQLServer.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
-		    remove(pstm, id);
+		    String sql2 = "SELECT id_cliente FROM Cliente WHERE id_cliente = ?";
+		    PreparedStatement pstm2 = connection.prepareStatement(sql2);
+			pstm2.setInt(1, id);
+			ResultSet result = pstm2.executeQuery();
+		    if(result.next())remove(pstm, id);
+		    else System.out.println("Cliente com id informado eh inexistente");
 			
 		} catch(Exception ex) {
 			ex.printStackTrace();
@@ -73,7 +79,7 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactory.createConnection();
+			connection = ConnectionFactorySQLServer.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    String sql2 = "SELECT id_cliente FROM Cliente WHERE id_cliente = ?";
@@ -93,7 +99,7 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 	@Override
 	protected void lista(ResultSet result) throws SQLException{
 		while(result.next()) { 
-			System.out.println(String.format("Id %s", result.getInt("id_cliente")));
+			System.out.println("\n" + String.format("Id %s", result.getInt("id_cliente")));
 			System.out.println(String.format("Nome %s", result.getString("nome")));
 			System.out.println(String.format("Email %s", result.getString("email")) + "\n"); }
 	}
@@ -114,7 +120,8 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 		    deuErro = pstm.execute();
 			
 		}catch(SQLException e) {
-			if(e.getErrorCode() == 1451) System.out.println("Erro de integridade, é necessário apagar o pagamento referente ao cliente");
+			if(e.getErrorCode() == 1451 || e.getErrorCode() == 547) 
+				System.out.println("Erro de integridade, eh necessario apagar o registro de pagamento referente ao cliente");
 		}
 		if(!deuErro) System.out.println("Cliente removido com sucesso!");
 	}

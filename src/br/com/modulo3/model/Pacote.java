@@ -27,6 +27,8 @@ public class Pacote {
 		this.preco = preco;
 	}
 	
+	public Pacote( ) {}
+	
 	
 	public int getNum_viajantes() {
 		return num_viajantes;

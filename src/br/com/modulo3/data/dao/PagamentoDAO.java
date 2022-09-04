@@ -5,9 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
-
-import br.com.modulo3.data.ConnectionFactory;
+import br.com.modulo3.data.ConnectionFactorySQLServer;
 import br.com.modulo3.model.Pagamento;
+import utils.DateUtil;
 
 public class PagamentoDAO extends AbstractDAO<Pagamento>{
 
@@ -19,7 +19,7 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactory.createConnection();
+			connection = ConnectionFactorySQLServer.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    ResultSet result = pstm.executeQuery();
 		    
@@ -33,12 +33,12 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 	}
 	
 	public void salvaPagamento(Pagamento pagamento) {
-		String sql = "INSERT INTO Pagamento VALUES(DEFAULT, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Pagamento VALUES(?, ?, ?, ?)";
 		Connection connection = null;
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactory.createConnection();
+			connection = ConnectionFactorySQLServer.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    insere(pstm, pagamento);
@@ -56,10 +56,15 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactory.createConnection();
+			connection = ConnectionFactorySQLServer.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
-		    remove(pstm, id);
+		    String sql2 = "SELECT id_pagamento FROM Pagamento WHERE id_pagamento = ?";
+		    PreparedStatement pstm2 = connection.prepareStatement(sql2);
+			pstm2.setInt(1, id);
+			ResultSet result = pstm2.executeQuery();
+		    if(result.next()) remove(pstm, id);
+		    else System.out.println("Pagamento com o id informado eh inexistente");
 			
 		} catch(SQLException ex) {
 			System.out.println(ex.getMessage());
@@ -77,7 +82,7 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactory.createConnection();
+			connection = ConnectionFactorySQLServer.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    String sql2 = "SELECT id_pagamento FROM Pagamento WHERE id_pagamento = ?";
@@ -98,9 +103,9 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 	@Override
 	protected void lista(ResultSet result) throws SQLException {
 		while(result.next()) {
-			System.out.println(String.format("Id %.2f", result.getBigDecimal("id_pagamento")));
+			System.out.println("\n" + String.format("Id %d", result.getInt("id_pagamento")));
 			System.out.println(String.format("Valor total %.2f ", result.getBigDecimal("valor_total")));
-			System.out.println(String.format("Data Pagamento %s ", result.getDate("data_pagamento")));
+			System.out.println(String.format("Data Pagamento %s ", DateUtil.DateToString(result.getDate("data_pagamento"))));
 			System.out.println(String.format("Id do cliente %d ", result.getInt("id_cliente")));
 			System.out.println(String.format("Id do pacote %d ", result.getInt("id_pacote"))+ "\n");
 		}
@@ -119,8 +124,8 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 			temErro = pstm.execute();
 			
 		} catch (SQLException e) {
-			if(e.getErrorCode() == 1452) 
-				System.out.println("Erro de de integridade, deve haver um id de pacote e cliente válidos");
+			if(e.getErrorCode() == 1452 || e.getErrorCode() == 547) 
+				System.out.println("Erro de de integridade, deve haver um id de pacote e cliente validos");
 		}
 		
 		if(!temErro)

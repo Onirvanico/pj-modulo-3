@@ -1,9 +1,7 @@
 package br.com.modulo3.test;
 
+
 import java.math.BigDecimal;
-import java.sql.SQLException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Scanner;
 
@@ -13,6 +11,7 @@ import br.com.modulo3.data.dao.PagamentoDAO;
 import br.com.modulo3.model.Cliente;
 import br.com.modulo3.model.Pacote;
 import br.com.modulo3.model.Pagamento;
+import utils.DateUtil;
 
 public class Test {
 
@@ -20,7 +19,7 @@ public class Test {
 
 		// ClienteDAO clienteDAO = new ClienteDAO();
 
-		// clienteDAO.salvaCliente(new Cliente("Manasséis", "manasseis@email.com"));
+		// clienteDAO.salvaCliente(new Cliente("Manassï¿½is", "manasseis@email.com"));
 		
 		/*
 		 * clienteDAO.listaClientes(); Cliente cliente = new Cliente("Chris",
@@ -97,33 +96,42 @@ public class Test {
 		  
 		  System.out.println("**********Base de Dados DevAgens***********");
 		  System.out.println("*******Escolha a tabela para gerenciar*****");
-		  System.out.println("1 - Cliente | 2 - Pacote | 3 - Pagamento");
-		  escolha = Integer.parseInt(sc.nextLine());
-		 // sc.close();
-		  switch(escolha) {
-
-		     case 1:
-		    	 gerenciaClientes();
-		    	 break;
-		    	 
-		     case 2:
-		    	 int escolhaPacote;
-		    	 System.out.println(" 1 - adicionar pacote | 2 - alterar pacote | 3 - remover pacote | 4 - listar pacotes");
-		    	 escolhaPacote = Integer.parseInt(sc.nextLine());
-		    	 
-		    	 
-		     default: System.out.println("Em construcao");
-		  }
 		  
-		
+		  do {
+			  System.out.println("\n1 - Cliente | 2 - Pacote | 3 - Pagamento | 4 - Finalizar\n");
+			  escolha = Integer.parseInt(sc.nextLine());
+			  
+			  switch(escolha) {
+			  
+			  case 1:
+				  gerenciaClientes(sc);
+				  break;
+				  
+			  case 2:
+				  gerenciaPacotes(sc);
+				  break;
+				  
+			  case 3:
+				  gerenciaPagamentos(sc);
+				  break;
+				
+			  case 4:
+				  System.out.println("Programa finalizado com sucesso");
+				  break;
+			  
+			  default: System.out.println("\nOpcao invalida");
+			  
+			  }
+			  
+			  
+		  } while(escolha != 4);
 
 	}
 	
-	private static void gerenciaClientes() {
-		 Scanner sc = new Scanner(System.in);
+	private static void gerenciaClientes(Scanner sc) {
 		 ClienteDAO clienteDAO = new ClienteDAO();
     	 int escolhaCliente;
-    	 System.out.println(" 1 - adicionar cliente | 2 - alterar cliente | 3 - remover cliente | 4 - listar clientes");
+    	 System.out.println("\n1 - adicionar cliente | 2 - alterar cliente | 3 - remover cliente | 4 - listar clientes\n");
     	 escolhaCliente = Integer.parseInt(sc.nextLine());
     	
     	 switch(escolhaCliente) {
@@ -140,6 +148,8 @@ public class Test {
     	 		
     	 	case 2:
     	 		Cliente clienteAlterado = new Cliente();
+    	 		System.out.println("Id do cliente:");
+    	 		clienteAlterado.setId_cliente(Integer.parseInt(sc.nextLine()));
     	 		System.out.println("Nome:");
     	 		clienteAlterado.setNome(sc.nextLine());
     	 		System.out.println("Email:");
@@ -162,5 +172,109 @@ public class Test {
     	 		
     	 		
     	 }
+	}
+	
+	private static void gerenciaPacotes(Scanner sc) {
+		 int escolhaPacote;
+		  PacoteDAO pacoteDAO = new PacoteDAO();
+		  System.out.println("\n 1 - adicionar pacote | 2 - alterar pacote | 3 - remover pacote | 4 - listar pacotes\n");
+		  escolhaPacote = Integer.parseInt(sc.nextLine());
+		  switch(escolhaPacote) {
+		  	case 1:
+		  		Pacote pacote = preenchePacote(sc);
+		  		pacoteDAO.salvaPacote(pacote);
+		  		break;
+	  		
+		  	case 2:
+		  		Pacote pacoteAlterado = preenchePacote(sc);
+		  		System.out.println("Id do pacote:");
+		  		pacoteAlterado.setId(Integer.parseInt(sc.nextLine()));
+		  	    pacoteDAO.alteraPacote(pacoteAlterado);
+		  		break;
+		  		
+		  	case 3:
+		  		System.out.println("Id do pacote a ser excluido:");
+		  		int id = Integer.parseInt(sc.nextLine());
+		  		pacoteDAO.removePacote(id);
+		  		break;
+		  		
+		  	case 4:
+		  		pacoteDAO.listaPacotes();
+		  		break;
+	  		
+		  	default: System.out.println("Opcao invalida.");
+		  }
+	}
+	
+	private static Pacote preenchePacote(Scanner sc) {
+		Pacote pacote = new Pacote();
+  		System.out.println("Informe uma data de inicio no formato d/MM/aaaa:");
+  		Date data_inicio = DateUtil.stringToDate(sc.nextLine());
+  		pacote.setData_inicio(data_inicio);
+  		System.out.println("Informe uma data de fim no formato d/MM/aaaa:");
+  		pacote.setData_fim(DateUtil.stringToDate(sc.nextLine()));
+  		System.out.println("Descricao para o pacote:");
+  		pacote.setDescricao(sc.nextLine());
+  		System.out.println("Destino do pacote:");
+  		pacote.setDestino(sc.nextLine());
+  		System.out.println("Total de viajantes:");
+  		pacote.setNum_viajantes(Integer.parseInt(sc.nextLine()));
+  		System.out.println("Defina um titulo para o pacote:");
+  		pacote.setTitulo(sc.nextLine());
+  		System.out.println("Preco:");
+  		pacote.setPreco(sc.nextBigDecimal());
+  		sc.nextLine();
+  		
+  		return pacote;
+	}
+	
+	private static void gerenciaPagamentos(Scanner sc) {
+		
+		 PagamentoDAO pagamentoDAO = new PagamentoDAO();
+		  int escolhaPagamento;
+		  System.out.println("\n 1 - adicionar pagamento | 2 - alterar pagamento | 3 - remover pagamento | 4 - listar pagamentos\n");
+		  escolhaPagamento = Integer.parseInt(sc.nextLine());
+		  switch(escolhaPagamento) {
+		  
+		  	case 1:
+		  		Pagamento pagamento = new Pagamento();
+		  		System.out.println("Informe data do pagamento no formato d/MM/aaaa:");
+		  		pagamento.setData_pagamento(DateUtil.stringToDate(sc.nextLine()));
+		  		System.out.println("Id do cliente:");
+		  		pagamento.setId_cliente(Integer.parseInt(sc.nextLine()));
+		  		System.out.println("Id do pacote:");
+		  		pagamento.setId_pacote(Integer.parseInt(sc.nextLine()));
+		  		System.out.println("Valor total");
+		  		pagamento.setValor_total(new BigDecimal(Integer.parseInt(sc.nextLine())));
+		  		
+		  		pagamentoDAO.salvaPagamento(pagamento);
+		  		break;
+		  		
+		  	case 2:
+		  		Pagamento pagamentoAlterado = new Pagamento();
+		  		System.out.println("Informe data do pagamento no formato d/MM/aaaa:");
+		  		pagamentoAlterado.setData_pagamento(DateUtil.stringToDate(sc.nextLine()));;
+		  		System.out.println("Valor total");
+		  		pagamentoAlterado.setValor_total(new BigDecimal(Integer.parseInt(sc.nextLine())));
+		  		System.out.println("Id do pagamento:");
+		  		pagamentoAlterado.setId_pagamento(Integer.parseInt(sc.nextLine()));
+		  		
+		  		pagamentoDAO.alteraPagamento(pagamentoAlterado);
+		  		break;
+		  		
+		  	case 3:
+		  		int id;
+		  		System.out.println("Id do pagamento a ser excluido:");
+		  		id = Integer.parseInt(sc.nextLine());
+		  		
+		  		pagamentoDAO.removePagamento(id);
+		  		break;
+		  		
+		  	case 4:
+		  		pagamentoDAO.listaPagamentos();
+		  		break;
+		  			
+ 			default: System.out.println("Opcao invalida.");
+		  }
 	}
 }

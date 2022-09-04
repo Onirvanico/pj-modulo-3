@@ -20,6 +20,8 @@ public class Pagamento {
 		this.id_pacote = id_pacote;
 	}
 	
+	public Pagamento() {}
+	
 	public Pagamento(BigDecimal valor_total, Date data_pagamento) {
 		this.valor_total = valor_total;
 		this.data_pagamento = data_pagamento;
