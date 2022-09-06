@@ -6,7 +6,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import br.com.modulo3.data.ConnectionFactoryMySQL;
-import br.com.modulo3.data.ConnectionFactorySQLServer;
 import br.com.modulo3.model.Cliente;
 
 public class ClienteDAO extends AbstractDAO<Cliente>{
@@ -19,7 +18,7 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    ResultSet result = pstm.executeQuery();
 		    
@@ -33,12 +32,12 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 	}
 	
 	public void salvaCliente(Cliente cliente) {
-		String sql = "INSERT INTO Cliente VALUES( ?, ?)";
+		String sql = "INSERT INTO Cliente VALUES(DEFAULT, ?, ?)";
 		Connection connection = null;
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    insere(pstm, cliente);
@@ -56,7 +55,7 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    String sql2 = "SELECT id_cliente FROM Cliente WHERE id_cliente = ?";
@@ -79,7 +78,7 @@ public class ClienteDAO extends AbstractDAO<Cliente>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    String sql2 = "SELECT id_cliente FROM Cliente WHERE id_cliente = ?";

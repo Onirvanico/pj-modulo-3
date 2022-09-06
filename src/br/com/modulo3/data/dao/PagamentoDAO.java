@@ -5,7 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Date;
-import br.com.modulo3.data.ConnectionFactorySQLServer;
+
+import br.com.modulo3.data.ConnectionFactoryMySQL;
 import br.com.modulo3.model.Pagamento;
 import utils.DateUtil;
 
@@ -19,7 +20,7 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    ResultSet result = pstm.executeQuery();
 		    
@@ -33,12 +34,12 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 	}
 	
 	public void salvaPagamento(Pagamento pagamento) {
-		String sql = "INSERT INTO Pagamento VALUES(?, ?, ?, ?)";
+		String sql = "INSERT INTO Pagamento VALUES(DEFAULT, ?, ?, ?, ?)";
 		Connection connection = null;
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    insere(pstm, pagamento);
@@ -56,7 +57,7 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    String sql2 = "SELECT id_pagamento FROM Pagamento WHERE id_pagamento = ?";
@@ -82,7 +83,7 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    String sql2 = "SELECT id_pagamento FROM Pagamento WHERE id_pagamento = ?";
@@ -125,7 +126,7 @@ public class PagamentoDAO extends AbstractDAO<Pagamento>{
 			
 		} catch (SQLException e) {
 			if(e.getErrorCode() == 1452 || e.getErrorCode() == 547) 
-				System.out.println("Erro de de integridade, deve haver um id de pacote e cliente validos");
+				System.out.println("Erro de de integridade, deve haver um id de pacote e de cliente validos");
 		}
 		
 		if(!temErro)

@@ -5,7 +5,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import br.com.modulo3.data.ConnectionFactorySQLServer;
+
+import br.com.modulo3.data.ConnectionFactoryMySQL;
 import br.com.modulo3.model.Pacote;
 import utils.DateUtil;
 
@@ -18,7 +19,7 @@ public class PacoteDAO extends AbstractDAO<Pacote> {
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    ResultSet result = pstm.executeQuery();
 		    
@@ -32,12 +33,12 @@ public class PacoteDAO extends AbstractDAO<Pacote> {
 	}
 	
 	public void salvaPacote(Pacote pacote) {
-		String sql = "INSERT INTO Pacote VALUES(?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Pacote VALUES(DEFAUT, ?, ?, ?, ?, ?, ?, ?)";
 		Connection connection = null;
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    insere(pstm, pacote);
@@ -55,7 +56,7 @@ public class PacoteDAO extends AbstractDAO<Pacote> {
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    String sql2 = "SELECT id_pacote FROM Pacote WHERE id_pacote = ?";
@@ -81,7 +82,7 @@ public class PacoteDAO extends AbstractDAO<Pacote> {
 		PreparedStatement pstm = null;
 		
 		try {
-			connection = ConnectionFactorySQLServer.createConnection();
+			connection = ConnectionFactoryMySQL.createConnection();
 		    pstm = connection.prepareStatement(sql);
 		    
 		    String sql2 = "SELECT id_pacote FROM Pacote WHERE id_pacote = ?";
@@ -150,7 +151,7 @@ public class PacoteDAO extends AbstractDAO<Pacote> {
 		pstm.setBigDecimal(7, pacote.getPreco());
 		pstm.setInt(8,  pacote.getId_pacote());
 		boolean deuErro = pstm.execute();
-		if(!deuErro) System.out.println("Cliente atualizado com sucesso!");
+		if(!deuErro) System.out.println("Pacote atualizado com sucesso!");
 	}
 
 	
